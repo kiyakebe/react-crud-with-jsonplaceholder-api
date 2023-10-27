@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 interface User {
   id: number;
   name: string;
-  profile: ImageData;
+  // profile: ImageData;
 }
 
 function App() {
@@ -39,13 +39,36 @@ function App() {
     setUsers(users.filter((u) => u.id != user.id));
     axios
       .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
-      .catch((err) => {setError(err.message); setUsers(origionalUsers)});
+      .catch((err) => {
+        setError(err.message);
+        setUsers(origionalUsers);
+      });
+  };
+
+  const createUser = () => {
+    const newUser = { id: 0, name: "kiya" };
+    const origionalUsers = [...users];
+    console.log(newUser);
+
+    setUsers([newUser, ...users]);
+    axios
+      .post("https://jsonplaceholder.typicode.com/users/", newUser)
+      // .then((res) => setUsers([res.data, ...users]))
+      // .then(({data}) => setUsers([data, ...users]))
+      .then(({ data: savedUser }) => setUsers([savedUser, ...users]))
+      .catch((err) => {
+        setError(err.message);
+        setUsers(origionalUsers);
+      });
   };
 
   return (
     <>
       {isLoading && <div className="spinner-border"></div>}
       {error && <p className="text-danger">{error}</p>}
+      <button className="btn btn-primary mb-3" onClick={createUser}>
+        Add
+      </button>
       <ul className="list-group w-50">
         {users.map((user) => (
           <li
